@@ -1,5 +1,5 @@
 /*
-Author: Ýlhan Yýldýrým
+Author: Ilhan Yildirim
 Description: The program gets a random sequence and returns its T-complexity value 
 defined by Mark Titchener at "M.R.Titchener:A Measure of Information, IEEE Data 
 Compression Conference, Snowbird, Utah, March 2000.
