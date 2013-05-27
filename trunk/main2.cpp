@@ -1,5 +1,5 @@
 /*
-Author: Ilhan Yildirim
+Author: İlhan Yıldırım
 Description: The program gets a random sequence and returns its T-complexity value 
 defined by Mark Titchener at "M.R.Titchener:A Measure of Information, IEEE Data 
 Compression Conference, Snowbird, Utah, March 2000.
@@ -144,7 +144,48 @@ void SearchForLastP(int *currentArray, int *k, int *p){
 	free(newArray);
 	return;
 }
+long Factorial(long k){
+	if (k>1){
+		return k*Factorial(k-1);
+	}
+	else{
+		return 1;
+	}
+}
 
+float CalculateLi(float x, int numberOfSteps){
+	float sum=0,delta;
+	int i;
+	delta=(x-2)/numberOfSteps;
+	for(i=0;i<numberOfSteps;i++){
+		sum+=delta/log(2+i*delta);
+	}
+	return (sum+1.045);
+}
+float CalculateInvLi(float x, float precision){
+	int i;
+	float y,upper, lower, mid;
+	upper=sequenceSize;
+	lower=0;
+	mid=(upper+lower)/2;
+	while(1){
+		y=CalculateLi(mid,12000);
+		if(y<x+precision && y>x-precision){
+			lower=mid;
+			upper=upper;
+			break;
+		}
+		else if(y>x){
+			upper=mid;
+			mid=(lower+upper)/2;
+		}
+		else{
+			lower=mid;
+			mid=(lower+upper)/2;
+		}
+	}
+	return mid;
+}
 int main(int argc, char *argv[]){
 	int i=0,m;
 	int *currentArray;
@@ -234,8 +275,9 @@ int main(int argc, char *argv[]){
 			break;
 		}
 	}
-	printf("LastSymbol : %d\n",lastSymbol);
-	printf("Complexity : %f", sum);
+	printf("%d\t%d\n",lastSymbol, k[LastKAddress]);
+	printf("Complexity : %f\n", sum);
+	printf("Entropy per bit : %f\n", CalculateInvLi(sum, 0.001)/sequenceSize);
 	t = clock() - t;
 	printf ("It took me %d clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);	
 }
