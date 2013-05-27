@@ -156,7 +156,6 @@ int main(int argc, char *argv[]){
 	FILE *infile;
 	t = clock();
 	sequenceSize=atof(argv[1]);
-	printf("alk");
 	if(sequenceSize<100000){
 		currentArray=(int *)malloc(sequenceSize*sizeof(int));
 		symbolMatrix=(int **)malloc((sequenceSize/4)*sizeof(int*));
@@ -213,7 +212,6 @@ int main(int argc, char *argv[]){
 	}
 	i=0;
 	currentLength=sequenceSize-1;
-	printf("alk");
 	infile=fopen(argv[2],"r");
 	while(1){
 		if(fscanf(infile, "%c", &chnew) != EOF){
@@ -236,8 +234,8 @@ int main(int argc, char *argv[]){
 			break;
 		}
 	}
-	printf("%d\t%d\n",lastSymbol, k[LastKAddress]);
-	printf("%f", sum);
+	printf("LastSymbol : %d\n",lastSymbol);
+	printf("Complexity : %f", sum);
 	t = clock() - t;
 	printf ("It took me %d clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);	
 }
