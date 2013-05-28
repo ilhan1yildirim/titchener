@@ -7,7 +7,7 @@ Compression Conference, Snowbird, Utah, March 2000.
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "math.h"
+#include <math.h>
 
 	int LastPAddress=-1;
 	int LastKAddress=-1;
@@ -21,6 +21,8 @@ Compression Conference, Snowbird, Utah, March 2000.
 	int** symbolMatrix;
 	int* newSymbolPosition1;
 	int* newSymbolPosition2;
+	int kLimit;
+	int maxK=0;
 	#define FREE(P) ((void)(free((P)), (P) = NULL))
 	
 
@@ -42,7 +44,7 @@ void FindP(int *currentArray, int *k, int *p){
 	}
 	return;
 }
-void FindK(int *currentArray, int *k, int *p){
+int FindK(int *currentArray, int *k, int *p){
 	int i,lastP;
 	lastP=p[LastPAddress];
 	LastKAddress++;
@@ -58,7 +60,13 @@ void FindK(int *currentArray, int *k, int *p){
 			break;
 		}
 	}
-	return;
+	if(k[LastKAddress]>kLimit){
+		return 1;
+	}
+	if(k[LastKAddress]>maxK){
+		maxK=k[LastKAddress];
+	}
+	return 0;
 }
 void SearchForLastP(int *currentArray, int *k, int *p){
 	int lastP = p[LastPAddress],i,j,z,x=0,m,n;
@@ -128,6 +136,10 @@ void SearchForLastP(int *currentArray, int *k, int *p){
 		}
 		i=i+j+x+1;
 	}
+	/*
+	for(i=0;i<newSymbolCount;i++){
+		symbolMatrix[newSymbolPosition1[i]][newSymbolPosition2[i]] = 0;
+	}*/
 	for(i=0;i<=currentLength;i++){
 		if(currentArray[i]==-1){
 			;
@@ -191,12 +203,13 @@ int main(int argc, char *argv[]){
 	int *currentArray;
 	int *k;
 	int *p;
-	float sum=0;
+	double sum=0;
 	char chnew;
 	clock_t t;
 	FILE *infile;
 	t = clock();
 	sequenceSize=atof(argv[1]);
+	kLimit=(int)(log10(float(sequenceSize))/0.301);
 	if(sequenceSize<100000){
 		currentArray=(int *)malloc(sequenceSize*sizeof(int));
 		symbolMatrix=(int **)malloc((sequenceSize/4)*sizeof(int*));
@@ -205,10 +218,10 @@ int main(int argc, char *argv[]){
 		for(m=0; m<(sequenceSize/4); m++){
 			newSymbolPosition1[m]=0;
 			newSymbolPosition2[m]=0;
-			symbolMatrix[m]=(int*)malloc((int)(log10(float(sequenceSize))/0.301)*sizeof(int));
+			symbolMatrix[m]=(int*)malloc(kLimit*sizeof(int));
 		}
 		for(i=0;i<(sequenceSize/4);i++){
-			for(m=0;m<10;m++){
+			for(m=0;m<kLimit;m++){
 				symbolMatrix[i][m]=0;
 			}
 		}
@@ -221,10 +234,10 @@ int main(int argc, char *argv[]){
 		for(m=0; m<(sequenceSize/8); m++){
 			newSymbolPosition1[m]=0;
 			newSymbolPosition2[m]=0;
-			symbolMatrix[m]=(int*)malloc((int)(log10(float(sequenceSize))/0.301)*sizeof(int));
+			symbolMatrix[m]=(int*)malloc(kLimit*sizeof(int));
 		}
 		for(i=0;i<(sequenceSize/8);i++){
-			for(m=0;m<10;m++){
+			for(m=0;m<kLimit;m++){
 				symbolMatrix[i][m]=0;
 			}
 		}
@@ -237,10 +250,10 @@ int main(int argc, char *argv[]){
 		for(m=0; m<(sequenceSize/10); m++){
 			newSymbolPosition1[m]=0;
 			newSymbolPosition2[m]=0;
-			symbolMatrix[m]=(int*)malloc((int)(log10(float(sequenceSize))/0.301)*sizeof(int));
+			symbolMatrix[m]=(int*)malloc(kLimit*sizeof(int));
 		}
 		for(i=0;i<(sequenceSize/10);i++){
-			for(m=0;m<10;m++){
+			for(m=0;m<kLimit;m++){
 				symbolMatrix[i][m]=0;
 			}
 		}
@@ -265,11 +278,15 @@ int main(int argc, char *argv[]){
 	}
 	while(1){
 		FindP(currentArray, k, p);
-		FindK(currentArray, k, p);
+		if(FindK(currentArray, k, p)==1){
+			printf("Hata");
+			break;
+		}
 		SearchForLastP(currentArray, k, p);
 		if(locationOfP==0 || currentLength ==0){
 			for(i=0;i<=LastKAddress;i++){
-				sum+=log10(float(k[i]+1));
+				printf("%d\n",k[i]);
+				sum+=log10((double)(k[i])+1);
 			}
 			sum=sum/log10(2.0);
 			break;
@@ -278,6 +295,7 @@ int main(int argc, char *argv[]){
 	printf("%d\t%d\n",lastSymbol, k[LastKAddress]);
 	printf("Complexity : %f\n", sum);
 	printf("Entropy per bit : %f\n", CalculateInvLi(sum, 0.001)/sequenceSize);
+	printf("Maximum of k is %d\n", maxK);
 	t = clock() - t;
 	printf ("It took me %d clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);	
 }
