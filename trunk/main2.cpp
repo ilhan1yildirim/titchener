@@ -285,17 +285,17 @@ int main(int argc, char *argv[]){
 		SearchForLastP(currentArray, k, p);
 		if(locationOfP==0 || currentLength ==0){
 			for(i=0;i<=LastKAddress;i++){
-				printf("%d\n",k[i]);
+				//printf("%d\n",k[i]);
 				sum+=log10((double)(k[i])+1);
 			}
 			sum=sum/log10(2.0);
 			break;
 		}
 	}
-	printf("%d\t%d\n",lastSymbol, k[LastKAddress]);
-	printf("Complexity : %f\n", sum);
-	printf("Entropy per bit : %f\n", CalculateInvLi(sum, 0.001)/sequenceSize);
-	printf("Maximum of k is %d\n", maxK);
+	printf("Last Symbol     : %d\n",lastSymbol);
+	printf("T-Complexity	: %f\n", sum);
+	printf("T-Info per bit  : %f\n", CalculateInvLi(sum, 0.1)/sequenceSize);
+	printf("Maximum of k	: %d\n", maxK);
 	t = clock() - t;
 	printf ("It took me %d clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);	
 }
